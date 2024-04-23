@@ -1,5 +1,10 @@
 package com.epam.mjc;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.StringTokenizer;
+import com.epam.mjc.MethodSignature.Argument;
+
 public class MethodParser {
 
     /**
@@ -20,6 +25,30 @@ public class MethodParser {
      * @return {@link MethodSignature} object filled with parsed values from source string
      */
     public MethodSignature parseFunction(String signatureString) {
-        throw new UnsupportedOperationException("You should implement this method.");
+        StringTokenizer tokenizer = new StringTokenizer(signatureString, "()");
+        StringTokenizer methodSignatureWithoutArguments = new StringTokenizer(tokenizer.nextToken(), " ");
+        String argumentsAsString = tokenizer.hasMoreTokens() ? tokenizer.nextToken() : "";
+        String modifier = methodSignatureWithoutArguments.countTokens() == 3 ? methodSignatureWithoutArguments.nextToken() : "";
+        String returnType = methodSignatureWithoutArguments.nextToken();
+        String name = methodSignatureWithoutArguments.nextToken();
+
+        MethodSignature methodSignature = argumentsAsString.isEmpty() ? new MethodSignature(name) : new MethodSignature(name, getArgumentsFromString(argumentsAsString));
+        methodSignature.setReturnType(returnType);
+        if (!modifier.isEmpty())
+            methodSignature.setAccessModifier(modifier);
+
+        return methodSignature;
+    }
+
+    public List<Argument> getArgumentsFromString(String argumentsAsString) {
+        List<Argument> arguments = new ArrayList<>();
+        StringTokenizer tokenizer = new StringTokenizer(argumentsAsString, ", ");
+        while (tokenizer.hasMoreTokens()) {
+            String type = tokenizer.nextToken();
+            String name = tokenizer.nextToken();
+            Argument argument = new Argument(type, name);
+            arguments.add(argument);
+        }
+        return arguments;
     }
 }
